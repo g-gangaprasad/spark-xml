@@ -15,16 +15,16 @@
  */
 package com.databricks.spark.xml
 
-import java.io.IOException
-
+import com.databricks.spark.xml.parsers.StaxXmlParser
+import com.databricks.spark.xml.util.{InferSchema, XSDToSchema, XmlFile}
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
-import org.apache.spark.sql.sources.{PrunedScan, InsertableRelation, BaseRelation}
+import org.apache.spark.sql.sources.{BaseRelation, InsertableRelation, PrunedScan}
 import org.apache.spark.sql.types._
-import com.databricks.spark.xml.util.{InferSchema, XmlFile}
-import com.databricks.spark.xml.parsers.StaxXmlParser
+
+import java.io.IOException
+import java.nio.file.Paths
 
 case class XmlRelation protected[spark] (
     baseRDD: () => RDD[String],
@@ -42,9 +42,14 @@ case class XmlRelation protected[spark] (
 
   override val schema: StructType = {
     Option(userSchema).getOrElse {
-      InferSchema.infer(
-        baseRDD(),
-        options)
+      if (options.xsdFilePath != null) {
+        XSDToSchema.read(Paths.get(options.xsdFilePath), options.rowTag)
+      } else {
+        val userSchma = InferSchema.infer(
+          baseRDD(),
+          options);
+        userSchma
+      }
     }
   }
 

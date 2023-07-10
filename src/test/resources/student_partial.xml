@@ -1,0 +1,24 @@
+<student_data>
+  <header>
+    <reqDate>20230701</reqDate>
+    <rowCount>2</rowCount>
+  </header>
+  <students>
+    <student>
+      <id>119</id>
+      <name>
+        <last_name>JONES</last_name>
+        <first_name>DIANE</first_name>
+      </name>
+      <courses></courses>
+    </student>
+    <student>
+      <id>1078</id>
+      <name>
+        <last_name>SMITH</last_name>
+        <first_name>ANDY</first_name>
+      </name>
+      <courses></courses>
+    </student>
+  </students>
+</student_data>

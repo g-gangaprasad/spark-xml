@@ -49,6 +49,15 @@ object XSDToSchema {
     getStructType(xmlSchema)
   }
 
+  def read(xsdFile: File, rowTag: String): StructType = {
+    val xmlSchemaCollection = new XmlSchemaCollection()
+    xmlSchemaCollection.setBaseUri(xsdFile.getParent)
+    val xmlSchema = xmlSchemaCollection.read(
+      new InputStreamReader(new FileInputStream(xsdFile), StandardCharsets.UTF_8))
+
+    filterSchemaByRowTag("root", getStructType(xmlSchema), rowTag).last
+  }
+
   /**
    * Reads a schema from an XSD file.
    * Note that if the schema consists of one complex parent type which you want to use as
@@ -59,6 +68,7 @@ object XSDToSchema {
    * @return Spark-compatible schema
    */
   def read(xsdFile: Path): StructType = read(xsdFile.toFile)
+  def read(xsdFile: Path, rowTag: String): StructType = read(xsdFile.toFile, rowTag)
 
   /**
    * Reads a schema from an XSD as a string.
@@ -72,6 +82,11 @@ object XSDToSchema {
   def read(xsdString: String): StructType = {
     val xmlSchema = new XmlSchemaCollection().read(new StringReader(xsdString))
     getStructType(xmlSchema)
+  }
+
+  def read(xsdString: String, rowTag: String): StructType = {
+    val xmlSchema = new XmlSchemaCollection().read(new StringReader(xsdString))
+    filterSchemaByRowTag("root", getStructType(xmlSchema), rowTag).last
   }
 
 
@@ -274,4 +289,20 @@ object XSDToSchema {
           throw new IllegalArgumentException(s"Unsupported particle: $unsupported")
       }
   }
+
+  private def filterSchemaByRowTag(parentElementName: String, dt: DataType, rowTag: String)
+  : Seq[StructType] = {
+    dt match {
+      case s: ArrayType =>
+        filterSchemaByRowTag(parentElementName, s.elementType, rowTag)
+      case s: StructType =>
+        if (parentElementName.equals(rowTag)) {
+          return Seq[StructType](s)
+        }
+        s.fields.flatMap(f => filterSchemaByRowTag(f.name, f.dataType, rowTag))
+      case other =>
+        Seq[StructType]()
+    }
+  }
+
 }

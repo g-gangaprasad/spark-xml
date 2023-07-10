@@ -1,0 +1,14 @@
+<persons_list>
+  <header>
+    <reqDate>20230701</reqDate>
+    <rowCount>2</rowCount>
+  </header>
+  <persons>
+    <person>
+      <key>3017</key>
+    </person>
+    <person>
+      <key>276</key>
+    </person>
+  </persons>
+</persons_list>

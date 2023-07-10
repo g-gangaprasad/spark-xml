@@ -6,4 +6,5 @@ target/
 .metals/
 .vscode/
 .bloop/
+.devcontainer/
 metals.sbt

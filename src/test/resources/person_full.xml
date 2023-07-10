@@ -1,0 +1,22 @@
+<persons_list>
+  <header>
+    <reqDate>20230701</reqDate>
+    <rowCount>2</rowCount>
+  </header>
+  <persons>
+    <person>
+      <key>9027</key>
+      <value>
+        <last_name>DOE</last_name>
+        <first_name>JANE</first_name>
+      </value>
+    </person>
+    <person>
+      <key>288</key>
+      <value>
+        <last_name>DOE</last_name>
+        <first_name>JOHN</first_name>
+      </value>
+    </person>
+  </persons>
+</persons_list>

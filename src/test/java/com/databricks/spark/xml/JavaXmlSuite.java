@@ -35,6 +35,16 @@ public final class JavaXmlSuite {
     private static final int numBooks = 12;
     private static final String booksFile = "src/test/resources/books.xml";
     private static final String booksFileTag = "book";
+    private static final String personFullFile = "src/test/resources/person_full.xml";
+    private static final String personPartialFile = "src/test/resources/person_partial.xml";
+    private static final String personXSDFile = "src/test/resources/person.xsd";
+    private static final String personTag = "person";
+    private static final int numPersonElements = 2;
+    private static final String studentFullFile = "src/test/resources/student_full.xml";
+    private static final String studentPartialFile = "src/test/resources/student_partial.xml";
+    private static final String studentXSDFile = "src/test/resources/student.xsd";
+    private static final String studentTag = "student";
+    private static final int numStudents = 2;
 
     private SparkSession spark;
     private Path tempDir;
@@ -67,6 +77,74 @@ public final class JavaXmlSuite {
         String prefix = XmlOptions.DEFAULT_ATTRIBUTE_PREFIX();
         long result = df.select(prefix + "id").count();
         Assert.assertEquals(result, numBooks);
+    }
+
+    // Test schemaXSDFile option - Ganga P Gowrabattini 2023/07/03
+    @Test
+    public void testXmlParserWithXSDFile_4AllDataElements() {
+        Map<String, String> options = new HashMap<>();
+        options.put("rowTag", personTag);
+        options.put("xsdFilePath", personXSDFile);
+        Dataset<Row> df = spark.read().options(options).format("xml").load(personFullFile);
+        Assert.assertEquals(df.count(), numPersonElements);
+        df.collectAsList().forEach(row -> System.out.println(row));
+        Assert.assertEquals(2, df.schema().fields().length);
+        Assert.assertEquals("string", df.schema().fields()[0].dataType().simpleString());
+        Assert.assertEquals("struct<last_name:string,first_name:string>", df.schema().fields()[1].dataType().simpleString());
+    }
+
+    // Test schemaXSDFile option, with partial structure
+    @Test
+    public void testXmlParserWithXSDFile_4PartialDataElements() {
+        Map<String, String> options = new HashMap<>();
+        options.put("rowTag", personTag);
+        Dataset<Row> df = spark.read().options(options).format("xml").load(personPartialFile);
+        Assert.assertEquals(df.count(), numPersonElements);
+        df.collectAsList().forEach(row -> System.out.println(row));
+        // without XSD/schema, it will have one field only
+        Assert.assertEquals(1, df.schema().fields().length);
+        Assert.assertEquals("bigint", df.schema().fields()[0].dataType().simpleString());
+
+        // with XSD/schema it will have two fields
+        options.put("xsdFilePath", personXSDFile);
+        df = spark.read().options(options).format("xml").load(personPartialFile);
+        Assert.assertEquals(2, df.schema().fields().length);
+        Assert.assertEquals("string", df.schema().fields()[0].dataType().simpleString());
+        Assert.assertEquals("struct<last_name:string,first_name:string>", df.schema().fields()[1].dataType().simpleString());
+    }
+
+    // Test without schemaXSDFile option, two batches of data sets; one set of data having empty structType
+    // without schema missing structType interpreted as a empty string; causing merging both batches will
+    // result in exception - incompatible data types
+    @Test(expected = org.apache.spark.sql.AnalysisException.class)
+    public void testXmlParserMultipleFiles_Fail() {
+        Map<String, String> options = new HashMap<>();
+        options.put("rowTag", studentTag);
+        options.put("treatEmptyValuesAsNulls", "true"); // makes no difference with or without it, for the current test
+        Dataset<Row> df = spark.read().options(options).format("xml").load(studentFullFile);
+        Assert.assertEquals(df.count(), numStudents);
+        df.collectAsList().forEach(row -> System.out.println(row));
+        Dataset<Row> df1 = spark.read().options(options).format("xml").load(studentPartialFile);
+        df1.collectAsList().forEach(row -> System.out.println(row));
+        Dataset<Row> df_f = df1.union(df);
+    }
+
+    // Test without schemaXSDFile option, two batches of data sets; one set of data having empty structType
+    // without schema missing structType interpreted as a empty string; causing merging both batches will
+    // result in exception - incompatible data types
+    @Test
+    public void testXmlParserMultipleFiles_Success() {
+        Map<String, String> options = new HashMap<>();
+        options.put("rowTag", studentTag);
+        options.put("treatEmptyValuesAsNulls", "true"); // makes no difference with or without it, for the current test
+        options.put("xsdFilePath", studentXSDFile);
+        Dataset<Row> df = spark.read().options(options).format("xml").load(studentFullFile);
+        Assert.assertEquals(df.count(), numStudents);
+        df.collectAsList().forEach(row -> System.out.println(row));
+        Dataset<Row> df1 = spark.read().options(options).format("xml").load(studentPartialFile);
+        df1.collectAsList().forEach(row -> System.out.println(row));
+        Dataset<Row> df_fnl = df1.union(df);
+        df_fnl.collectAsList().forEach(row -> System.out.println(row));
     }
 
     @Test

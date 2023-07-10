@@ -1,0 +1,42 @@
+<student_data>
+  <header>
+    <reqDate>20230701</reqDate>
+    <rowCount>2</rowCount>
+  </header>
+  <students>
+    <student>
+      <id>9027</id>
+      <name>
+        <last_name>DOE</last_name>
+        <first_name>JANE</first_name>
+      </name>
+      <courses>
+        <course>
+          <id>CS101</id>
+          <name>Introduction To Datastructures</name>
+        </course>
+        <course>
+          <id>CS103</id>
+          <name>Introduction To Computer Architecture</name>
+        </course>
+      </courses>
+    </student>
+    <student>
+      <id>288</id>
+      <name>
+        <last_name>DOE</last_name>
+        <first_name>JOHN</first_name>
+      </name>
+      <courses>
+        <course>
+          <id>CS101</id>
+          <name>Introduction To Datastructures</name>
+        </course>
+        <course>
+          <id>CS102</id>
+          <name>Introduction To Algorithms</name>
+        </course>
+      </courses>
+    </student>
+  </students>
+</student_data>
