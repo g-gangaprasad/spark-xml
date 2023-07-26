@@ -49,13 +49,20 @@ object XSDToSchema {
     getStructType(xmlSchema)
   }
 
+  @throws(classOf[XSDParsingException])
   def read(xsdFile: File, rowTag: String): StructType = {
     val xmlSchemaCollection = new XmlSchemaCollection()
     xmlSchemaCollection.setBaseUri(xsdFile.getParent)
     val xmlSchema = xmlSchemaCollection.read(
       new InputStreamReader(new FileInputStream(xsdFile), StandardCharsets.UTF_8))
 
-    filterSchemaByRowTag("root", getStructType(xmlSchema), rowTag).last
+    val xsdSchema = filterSchemaByRowTag("root", getStructType(xmlSchema), rowTag)
+    if (xsdSchema.isEmpty) {
+      throw XSDParsingException(
+        "XSD doesn't have a matching element for the given rowTag '%s'".format(rowTag))
+    } else {
+      xsdSchema.last
+    }
   }
 
   /**
