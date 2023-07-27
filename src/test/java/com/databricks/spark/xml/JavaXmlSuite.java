@@ -94,7 +94,7 @@ public final class JavaXmlSuite {
         Assert.assertEquals("struct<last_name:string,first_name:string>", df.schema().fields()[1].dataType().simpleString());
     }
 
-    @Test(expected = com.databricks.spark.ggp.xml.util.XSDParsingException.class)
+    @Test(expected = com.databricks.spark.xml.util.XSDParsingException.class)
     public void testXmlParserWithXSDFile_RowTagMissing() {
         Map<String, String> options = new HashMap<>();
         options.put("rowTag", studentTag);
