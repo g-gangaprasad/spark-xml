@@ -60,7 +60,7 @@ private[xml] class XmlOptions(
   val parseMode = ParseMode.fromString(parameters.getOrElse("mode", PermissiveMode.name))
   val inferSchema = parameters.get("inferSchema").map(_.toBoolean).getOrElse(true)
   val rowValidationXSDPath = parameters.get("rowValidationXSDPath").orNull
-  val xsdFilePath = parameters.get("xsdFilePath").orNull
+  val xsdFile = parameters.get("xsdFile").orNull
   val wildcardColName =
     parameters.getOrElse("wildcardColName", XmlOptions.DEFAULT_WILDCARD_COL_NAME)
   val ignoreNamespace = parameters.get("ignoreNamespace").map(_.toBoolean).getOrElse(false)

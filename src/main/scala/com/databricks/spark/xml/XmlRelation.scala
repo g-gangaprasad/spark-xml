@@ -42,13 +42,12 @@ case class XmlRelation protected[spark] (
 
   override val schema: StructType = {
     Option(userSchema).getOrElse {
-      if (options.xsdFilePath != null) {
-        XSDToSchema.read(Paths.get(options.xsdFilePath), options.rowTag)
+      if (options.xsdFile != null) {
+        XSDToSchema.read(Paths.get(options.xsdFile), options.rowTag)
       } else {
-        val userSchma = InferSchema.infer(
+        InferSchema.infer(
           baseRDD(),
-          options);
-        userSchma
+          options)
       }
     }
   }

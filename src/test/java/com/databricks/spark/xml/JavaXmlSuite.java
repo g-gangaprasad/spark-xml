@@ -80,7 +80,7 @@ public final class JavaXmlSuite {
         Assert.assertEquals(result, numBooks);
     }
 
-    // Test schemaXSDFile option - Ganga P Gowrabattini 2023/07/03
+    // Test schemaXSDFile option
     @Test
     public void testXmlParserWithXSDFile_4AllDataElements() {
         Map<String, String> options = new HashMap<>();
@@ -102,7 +102,7 @@ public final class JavaXmlSuite {
         Dataset<Row> df = spark.read().options(options).format("xml").load(personFullFile);
     }
 
-    // Test schemaXSDFile option, with partial structure - Ganga P Gowrabattini 2023/07/03
+    // Test schemaXSDFile option, with partial structure
     @Test
     public void testXmlParserWithXSDFile_4PartialDataElements() {
         Map<String, String> options = new HashMap<>();
@@ -124,7 +124,7 @@ public final class JavaXmlSuite {
 
     // Test without schemaXSDFile option, two batches of data sets; one set of data having empty structType
     // without schema missing structType interpreted as a empty string; causing merging both batches will
-    // result in exception - incompatible data types - Ganga P Gowrabattini 2023/07/03
+    // result in exception - incompatible data types
     @Test(expected = org.apache.spark.sql.AnalysisException.class)
     public void testXmlParserMultipleFiles_Fail() {
         Map<String, String> options = new HashMap<>();
@@ -140,7 +140,7 @@ public final class JavaXmlSuite {
 
     // Test without schemaXSDFile option, two batches of data sets; one set of data having empty structType
     // without schema missing structType interpreted as a empty string; causing merging both batches will
-    // result in exception - incompatible data types - Ganga P Gowrabattini 2023/07/03
+    // result in exception - incompatible data types
     @Test
     public void testXmlParserMultipleFiles_Success() {
         Map<String, String> options = new HashMap<>();
